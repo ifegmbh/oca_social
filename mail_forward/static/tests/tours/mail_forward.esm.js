@@ -1,6 +1,7 @@
 /** @odoo-module */
 
 import tour from "web_tour.tour";
+
 const contact_steps = [
     {
         trigger: ".o_navbar_apps_menu button",
@@ -28,6 +29,7 @@ const contact_steps = [
         trigger: ".o_list_table td[name='display_name']:contains('Test')",
     },
 ];
+
 tour.register(
     "mail_forward.mail_forward_tour",
     {

@@ -7,30 +7,23 @@ const {Component} = owl;
 
 export class ForwardMessage extends Component {
     async onClickForwardMessage() {
-        const composer = this.props.message.originThread.composer;
-        const action = await this.env.services.rpc({
-            model: "mail.message",
-            method: "action_wizard_forward",
-            args: [[this.props.message.id]],
-        });
-        this.env.bus.trigger("do-action", {
-            action: action,
-            options: {
-                additional_context: {
-                    active_id: this.props.message.id,
-                    active_ids: [this.props.message.id],
-                    active_model: "mail.message",
-                },
-                on_close: () => {
-                    if (composer.exists()) {
-                        composer._reset();
-                        if (composer.activeThread) {
-                            composer.activeThread.loadNewMessages();
-                            composer.activeThread.refreshFollowers();
-                            composer.activeThread.fetchAndUpdateSuggestedRecipients();
-                        }
-                    }
-                },
+        const action = await this.env.services.orm.call(
+            "mail.message",
+            "action_wizard_forward",
+            [[this.props.message.id]]
+        );
+
+        await this.env.services.action.doAction(action, {
+            additional_context: {
+                active_id: this.props.message.id,
+                active_ids: [this.props.message.id],
+                active_model: "mail.message",
+            },
+            onClose: () => {
+                const thread = this.props.message.originThread;
+                if (thread) {
+                    thread.fetchData(["messages"]);
+                }
             },
         });
     }

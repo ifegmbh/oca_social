@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <templates xml:space="preserve">
     <t t-inherit="mail.MessageActionList" t-inherit-mode="extension" owl="1">
-        <xpath expr="//span[@t-if='messageActionList.hasReplyIcon']" position="before">
-            <!-- Show the "Forward Message" button only on messages, not on notes. -->
-            <ForwardMessage
-                t-if="messageActionList.message.is_discussion &amp;&amp; !messageActionList.message.is_note"
-                message="messageActionList.message"
-            />
+        <xpath
+            expr="//div[hasclass('o_MessageActionList')]//t[@t-foreach='messageActionList.messageActionViews']"
+            position="after"
+        >
+             <!-- Show the "Forward Message" button only on messages, not on notes. -->
+            <t t-if="messageActionList.message.is_discussion">
+                <t t-if="!messageActionList.message.is_note">
+                    <ForwardMessage message="messageActionList.message" />
+                </t>
+            </t>
         </xpath>
     </t>
 </templates>
